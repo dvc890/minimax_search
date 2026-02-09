@@ -175,6 +175,48 @@ minimax_search/
 - Jina Reader extracts web content (converts to Markdown)
 - MiniMax LLM understands content and generates comprehensive answers
 
+
+
+## Deployment
+
+### Docker Deployment (Standard)
+
+This project supports deployment via Docker, exposing an SSE endpoint at `/mcp/sse`.
+
+1. **Build the Docker image**:
+   ```bash
+   docker build -t minimax-search .
+   ```
+
+2. **Run with Docker**:
+   Run the container with the necessary environment variables:
+   ```bash
+   docker run -d \
+     --name minimax-search \
+     --restart unless-stopped \
+     -p 8000:8000 \
+     -e MINIMAX_API_KEY="your_minimax_api_key" \
+     -e SERPER_API_KEY="your_serper_api_key" \
+     -e JINA_API_KEY="your_jina_api_key" \
+     minimax-search
+   ```
+
+   The service will be available at `http://localhost:8000`.
+
+   **Endpoints**:
+   - `GET /sse`: Server-Sent Events endpoint (Standard).
+   - `GET /mcp`: Server-Sent Events endpoint (Alias).
+   - `POST /messages?session_id={uuid}`: Endpoint for sending messages (session ID returned in SSE connection).
+
+### Environment Variables
+
+Ensure the following environment variables are passed to `docker run`:
+
+- `MINIMAX_API_KEY`: Your MiniMax API key.
+- `SERPER_API_KEY`: Your Serper API key (for Google Search).
+- `JINA_API_KEY`: Your Jina API key (for web browsing).
+- `PORT`: Server port (default: 8000).
+
 ## License
 
 MIT
