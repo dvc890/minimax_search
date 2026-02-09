@@ -160,8 +160,26 @@ async def async_main():
         raise
 
 
+
 def main():
     """Main entry function - For uvx startup (synchronous wrapper)"""
+    # Check for PORT environment variable to switch to SSE mode (Zeabur/Web deployment)
+    if os.environ.get("PORT"):
+        try:
+            port = int(os.environ.get("PORT", 8000))
+            logger.info(f"Detected PORT={port}. Switching to SSE mode...")
+            
+            # Lazy import to avoid circular dependency issues at top level
+            import uvicorn
+            from server_sse import app
+            
+            uvicorn.run(app, host="0.0.0.0", port=port)
+            return
+        except Exception as e:
+            logger.error(f"Failed to start SSE server: {e}", exc_info=True)
+            sys.exit(1)
+
+    # Standard Stdio Mode
     try:
         asyncio.run(async_main())
     except KeyboardInterrupt:
